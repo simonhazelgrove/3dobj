@@ -1,5 +1,131 @@
 var cubeRotation = 0.0;
 
+var model = {
+  points: [
+    // Front corners
+    {
+      x: -1.0, y: -1.0, z: 1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: 1.0, y: -1.0, z: 1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: 1.0, y: 1.0, z: 1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: -1.0, y: 1.0, z: 1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    // Back corners
+    {
+      x: -1.0, y: -1.0, z: -1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: 1.0, y: -1.0, z: -1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: 1.0, y: 1.0, z: -1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    },
+    {
+      x: -1.0, y: 1.0, z: -1.0,
+      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+    }
+  ],
+  pointIndices: [
+    // Front triangles
+    0, 1, 2,      
+    0, 2, 3,    
+    // Back triangles
+    5, 4, 7,      
+    5, 7, 6,
+    // Left triangles
+    4, 0, 3,    
+    4, 3, 7,
+    // Right triangles
+    1, 5, 6,
+    1, 6, 2,
+    // Top triangles
+    3, 2, 6,
+    3, 6, 7,
+    // Bottom triangles
+    4, 5, 1,
+    4, 1, 0
+  ],
+  compile: function()
+  {
+    this.vertices = [],
+    this.normals = [],
+    this.colors = [],
+    this.indices = []
+    for(var i=0; i < this.pointIndices.length; i += 3) {
+      this.compileTriangle(this.points[this.pointIndices[i]], 
+        this.points[this.pointIndices[i+1]], 
+        this.points[this.pointIndices[i+2]]);
+    }
+  },
+  compileTriangle: function (p1, p2, p3) {
+    var normal = this.normalFromTriangle(p1, p2, p3);
+    this.compilePoint(p1, normal);
+    this.compilePoint(p2, normal);
+    this.compilePoint(p3, normal);
+  },
+  compilePoint: function(p, normal) {
+    var i = this.getIndex(p, normal);
+    if (i >= 0) {
+      this.indices.push(i);
+    } else {
+      this.vertices.push(p.x, p.y, p.z);
+      this.normals.push(normal.x, normal.y, normal.z);
+      this.colors.push(p.r, p.g, p.b, p.a);
+      this.indices.push(this.vertices.length / 3 - 1);
+    }
+  },
+  getIndex: function(p, normal) {
+    for(var i=0; i < this.vertices.length / 3; i++) {
+      if (this.vertices[i*3] == p.x && this.vertices[i*3+1] == p.y && this.vertices[i*3+2] == p.z
+        && this.normals[i*3] == normal.x && this.normals[i*3+1] == normal.y && this.normals[i*3+2] == normal.z
+        && this.colors[i*4] == p.r && this.colors[i*4+1] == p.g && this.colors[i*4+2] == p.b && this.colors[i*4+3] == p.a) 
+        return i;
+    }
+    return -1;
+  },
+  normalFromTriangle: function(p1, p2, p3) {
+    var u = {
+      x: p2.x - p1.x,
+      y: p2.y - p1.y,
+      z: p2.z - p1.z
+    } 
+    var v = {
+      x: p3.x - p1.x,
+      y: p3.y - p1.y,
+      z: p3.z - p1.z
+    } 
+    var n = {
+      x: (u.y * v.z) - (u.z * v.y),
+      y: (u.z * v.x) - (u.x * v.z),
+      z: (u.x * v.y) - (u.y * v.x)
+    };
+    return this.normalize(n);
+  },
+  normalize: function(v) {
+    var z = Math.pow(v.x, 2) + Math.pow(v.y, 2) + Math.pow(v.z, 2);
+    z = Math.pow(z, 0.5);
+    return {
+      x: v.x / z,
+      y: v.y / z,
+      z: v.z / z
+    }
+  }
+};
+
+model.compile();
+
 main();
 
 //
@@ -82,7 +208,7 @@ function main() {
 
   // Here's where we call the routine that builds all the
   // objects we'll be drawing.
-  const buffers = initBuffers(gl);
+  const buffers = initBuffers(gl, model);
 
   var then = 0;
 
@@ -105,159 +231,23 @@ function main() {
 // Initialize the buffers we'll need. For this demo, we just
 // have one object -- a simple three-dimensional cube.
 //
-function initBuffers(gl) {
-
-  // Create a buffer for the cube's vertex positions.
+function initBuffers(gl, model) {
 
   const positionBuffer = gl.createBuffer();
-
-  // Select the positionBuffer as the one to apply buffer
-  // operations to from here out.
-
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-  // Now create an array of positions for the cube.
-
-  const positions = [
-    // Front face
-    -1.0, -1.0,  1.0,
-     1.0, -1.0,  1.0,
-     1.0,  1.0,  1.0,
-    -1.0,  1.0,  1.0,
-
-    // Back face
-    -1.0, -1.0, -1.0,
-    -1.0,  1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0, -1.0, -1.0,
-
-    // Top face
-    -1.0,  1.0, -1.0,
-    -1.0,  1.0,  1.0,
-     1.0,  1.0,  1.0,
-     1.0,  1.0, -1.0,
-
-    // Bottom face
-    -1.0, -1.0, -1.0,
-     1.0, -1.0, -1.0,
-     1.0, -1.0,  1.0,
-    -1.0, -1.0,  1.0,
-
-    // Right face
-     1.0, -1.0, -1.0,
-     1.0,  1.0, -1.0,
-     1.0,  1.0,  1.0,
-     1.0, -1.0,  1.0,
-
-    // Left face
-    -1.0, -1.0, -1.0,
-    -1.0, -1.0,  1.0,
-    -1.0,  1.0,  1.0,
-    -1.0,  1.0, -1.0,
-  ];
-
-  // Now pass the list of positions into WebGL to build the
-  // shape. We do this by creating a Float32Array from the
-  // JavaScript array, then use it to fill the current buffer.
-
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-  // Set up the normals for the vertices, so that we can compute lighting.
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertices), gl.STATIC_DRAW);
 
   const normalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-
-  const vertexNormals = [
-    // Front
-      0.0,  0.0,  1.0,
-      0.0,  0.0,  1.0,
-      0.0,  0.0,  1.0,
-      0.0,  0.0,  1.0,
-
-    // Back
-      0.0,  0.0, -1.0,
-      0.0,  0.0, -1.0,
-      0.0,  0.0, -1.0,
-      0.0,  0.0, -1.0,
-
-    // Top
-      0.0,  1.0,  0.0,
-      0.0,  1.0,  0.0,
-      0.0,  1.0,  0.0,
-      0.0,  1.0,  0.0,
-
-    // Bottom
-      0.0, -1.0,  0.0,
-      0.0, -1.0,  0.0,
-      0.0, -1.0,  0.0,
-      0.0, -1.0,  0.0,
-
-    // Right
-      1.0,  0.0,  0.0,
-      1.0,  0.0,  0.0,
-      1.0,  0.0,  0.0,
-      1.0,  0.0,  0.0,
-
-    // Left
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0,
-      -1.0,  0.0,  0.0
-  ];
-
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
-                gl.STATIC_DRAW);
-
-  // Now set up the colors for the faces. We'll use solid colors
-  // for each face.
-
-  const faceColors = [
-    [1.0,  1.0,  1.0,  1.0],    // Front face: white
-    [1.0,  0.0,  0.0,  1.0],    // Back face: red
-    [0.0,  1.0,  0.0,  1.0],    // Top face: green
-    [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
-    [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
-    [1.0,  0.0,  1.0,  1.0],    // Left face: purple
-  ];
-
-  // Convert the array of colors into a table for all the vertices.
-
-  var colors = [];
-
-  for (var j = 0; j < faceColors.length; ++j) {
-    const c = faceColors[j];
-
-    // Repeat each color four times for the four vertices of the face
-    colors = colors.concat(c, c, c, c);
-  }
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.normals), gl.STATIC_DRAW);
 
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-
-  // Build the element array buffer; this specifies the indices
-  // into the vertex arrays for each face's vertices.
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.colors), gl.STATIC_DRAW);
 
   const indexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-  // This array defines each face as two triangles, using the
-  // indices into the vertex array to specify each triangle's
-  // position.
-
-  const indices = [
-    0,  1,  2,      0,  2,  3,    // front
-    4,  5,  6,      4,  6,  7,    // back
-    8,  9,  10,     8,  10, 11,   // top
-    12, 13, 14,     12, 14, 15,   // bottom
-    16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23,   // left
-  ];
-
-  // Now send the element array to GL
-
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(indices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.indices), gl.STATIC_DRAW);
 
   return {
     position: positionBuffer,
@@ -318,7 +308,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
   mat4.rotate(modelViewMatrix,  // destination matrix
               modelViewMatrix,  // matrix to rotate
               cubeRotation * .7,// amount to rotate in radians
-              [0, 1, 0]);       // axis to rotate around (X)
+              [1, 1, 0]);       // axis to rotate around (X)
 
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
