@@ -1,61 +1,63 @@
 var cubeRotation = 0.0;
 
 var model = {
+  materials: [
+    {
+      // Painted metal
+      r: 0.5, g: 0.54, b: 0.5, a: 1.0
+    },
+    {
+      // Glass
+      r: 0, g: 0, b: 1, a: 0.5
+    }
+  ],
   points: [
     // Front corners
     {
-      x: -1.0, y: -1.0, z: 1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: -1.0, y: -1.0, z: 1.0
     },
     {
-      x: 1.0, y: -1.0, z: 1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: 1.0, y: -1.0, z: 1.0
     },
     {
-      x: 1.0, y: 1.0, z: 1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: 1.0, y: 1.0, z: 1.0
     },
     {
-      x: -1.0, y: 1.0, z: 1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: -1.0, y: 1.0, z: 1.0
     },
     // Back corners
     {
-      x: -1.0, y: -1.0, z: -1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: -1.0, y: -1.0, z: -1.0
     },
     {
-      x: 1.0, y: -1.0, z: -1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: 1.0, y: -1.0, z: -1.0
     },
     {
-      x: 1.0, y: 1.0, z: -1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: 1.0, y: 1.0, z: -1.0
     },
     {
-      x: -1.0, y: 1.0, z: -1.0,
-      r: 0.3, g: 0.34, b: 0.3, a: 1.0
+      x: -1.0, y: 1.0, z: -1.0
     }
   ],
-  pointIndices: [
+  triangles: [
     // Front triangles
-    0, 1, 2,      
-    0, 2, 3,    
+    { p1: 0, p2: 1, p3: 2, material: 0 },      
+    { p1: 0, p2: 2, p3: 3, material: 0 },
     // Back triangles
-    5, 4, 7,      
-    5, 7, 6,
+    { p1: 5, p2: 4, p3: 7, material: 0 },
+    { p1: 5, p2: 7, p3: 6, material: 0 },
     // Left triangles
-    4, 0, 3,    
-    4, 3, 7,
+    { p1: 4, p2: 0, p3: 3, material: 0 },
+    { p1: 4, p2: 3, p3: 7, material: 0 },
     // Right triangles
-    1, 5, 6,
-    1, 6, 2,
+    { p1: 1, p2: 5, p3: 6, material: 0 },
+    { p1: 1, p2: 6, p3: 2, material: 0 },
     // Top triangles
-    3, 2, 6,
-    3, 6, 7,
+    { p1: 3, p2: 2, p3: 6, material: 0 },
+    { p1: 3, p2: 6, p3: 7, material: 0 },
     // Bottom triangles
-    4, 5, 1,
-    4, 1, 0
+    { p1: 4, p2: 5, p3: 1, material: 1 },
+    { p1: 4, p2: 1, p3: 0, material: 1 }
   ],
   compile: function()
   {
@@ -63,34 +65,36 @@ var model = {
     this.normals = [],
     this.colors = [],
     this.indices = []
-    for(var i=0; i < this.pointIndices.length; i += 3) {
-      this.compileTriangle(this.points[this.pointIndices[i]], 
-        this.points[this.pointIndices[i+1]], 
-        this.points[this.pointIndices[i+2]]);
+    for(var i=0; i < this.triangles.length; i++) {
+      this.compileTriangle(this.triangles[i]);
     }
   },
-  compileTriangle: function (p1, p2, p3) {
+  compileTriangle: function (triangle) {
+    var p1 = this.points[triangle.p1];
+    var p2 = this.points[triangle.p2];
+    var p3 = this.points[triangle.p3];
+    var material = this.materials[triangle.material];
     var normal = this.normalFromTriangle(p1, p2, p3);
-    this.compilePoint(p1, normal);
-    this.compilePoint(p2, normal);
-    this.compilePoint(p3, normal);
+    this.compilePoint(p1, normal, material);
+    this.compilePoint(p2, normal, material);
+    this.compilePoint(p3, normal, material);
   },
-  compilePoint: function(p, normal) {
-    var i = this.getIndex(p, normal);
+  compilePoint: function(p, normal, material) {
+    var i = this.getIndex(p, normal, material);
     if (i >= 0) {
       this.indices.push(i);
     } else {
       this.vertices.push(p.x, p.y, p.z);
       this.normals.push(normal.x, normal.y, normal.z);
-      this.colors.push(p.r, p.g, p.b, p.a);
+      this.colors.push(material.r, material.g, material.b, material.a);
       this.indices.push(this.vertices.length / 3 - 1);
     }
   },
-  getIndex: function(p, normal) {
+  getIndex: function(p, normal, material) {
     for(var i=0; i < this.vertices.length / 3; i++) {
       if (this.vertices[i*3] == p.x && this.vertices[i*3+1] == p.y && this.vertices[i*3+2] == p.z
         && this.normals[i*3] == normal.x && this.normals[i*3+1] == normal.y && this.normals[i*3+2] == normal.z
-        && this.colors[i*4] == p.r && this.colors[i*4+1] == p.g && this.colors[i*4+2] == p.b && this.colors[i*4+3] == p.a) 
+        && this.colors[i*4] == material.r && this.colors[i*4+1] == material.g && this.colors[i*4+2] == material.b && this.colors[i*4+3] == material.a) 
         return i;
     }
     return -1;
@@ -133,7 +137,7 @@ main();
 //
 function main() {
   const canvas = document.querySelector('#glcanvas');
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  const gl = canvas.getContext('webgl', { alpha: false });
 
   // If we don't have a GL context, give up now
 
@@ -141,6 +145,9 @@ function main() {
     alert('Unable to initialize WebGL. Your browser or machine may not support it.');
     return;
   }
+
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   // Vertex shader program
 
@@ -159,7 +166,7 @@ function main() {
     void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
       vColor = aVertexColor;
-
+      
       // Apply lighting effect
       
       highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
@@ -172,7 +179,7 @@ function main() {
       vLighting = ambientLight + (directionalLightColor * directional);
     }
   `;
-
+  
   // Fragment shader program
 
   const fsSource = `
