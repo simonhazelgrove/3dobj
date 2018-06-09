@@ -4,11 +4,18 @@ var model = {
   materials: [
     {
       // Painted metal
-      r: 0.5, g: 0.54, b: 0.5, a: 1.0
+      r: 0.5, g: 0.54, b: 0.5, a: 1.0,
+      isFire: false
     },
     {
       // Glass
-      r: 0, g: 0, b: 1, a: 0.5
+      r: 0, g: 0, b: 1, a: 0.5,
+      isFire: false
+    },
+    {
+      // Fire
+      r: 1, g: 0, b: 0, a: 1,
+      isFire: true
     }
   ],
   points: [
@@ -41,11 +48,11 @@ var model = {
   ],
   triangles: [
     // Front triangles
-    { p1: 0, p2: 1, p3: 2, material: 0 },      
-    { p1: 0, p2: 2, p3: 3, material: 0 },
+    { p1: 0, p2: 1, p3: 2, material: 1 },      
+    { p1: 0, p2: 2, p3: 3, material: 1 },
     // Back triangles
-    { p1: 5, p2: 4, p3: 7, material: 0 },
-    { p1: 5, p2: 7, p3: 6, material: 0 },
+    { p1: 5, p2: 4, p3: 7, material: 2 },
+    { p1: 5, p2: 7, p3: 6, material: 2 },
     // Left triangles
     { p1: 4, p2: 0, p3: 3, material: 0 },
     { p1: 4, p2: 3, p3: 7, material: 0 },
@@ -56,15 +63,16 @@ var model = {
     { p1: 3, p2: 2, p3: 6, material: 0 },
     { p1: 3, p2: 6, p3: 7, material: 0 },
     // Bottom triangles
-    { p1: 4, p2: 5, p3: 1, material: 1 },
-    { p1: 4, p2: 1, p3: 0, material: 1 }
+    { p1: 4, p2: 5, p3: 1, material: 0 },
+    { p1: 4, p2: 1, p3: 0, material: 0 }
   ],
   compile: function()
   {
     this.vertices = [],
     this.normals = [],
     this.colors = [],
-    this.indices = []
+    this.indices = [],
+    this.vertexMaterials = [];
     for(var i=0; i < this.triangles.length; i++) {
       this.compileTriangle(this.triangles[i]);
     }
@@ -87,6 +95,7 @@ var model = {
       this.vertices.push(p.x, p.y, p.z);
       this.normals.push(normal.x, normal.y, normal.z);
       this.colors.push(material.r, material.g, material.b, material.a);
+      this.vertexMaterials.push(material.isFire ? 1 : 0);
       this.indices.push(this.vertices.length / 3 - 1);
     }
   },
@@ -94,7 +103,8 @@ var model = {
     for(var i=0; i < this.vertices.length / 3; i++) {
       if (this.vertices[i*3] == p.x && this.vertices[i*3+1] == p.y && this.vertices[i*3+2] == p.z
         && this.normals[i*3] == normal.x && this.normals[i*3+1] == normal.y && this.normals[i*3+2] == normal.z
-        && this.colors[i*4] == material.r && this.colors[i*4+1] == material.g && this.colors[i*4+2] == material.b && this.colors[i*4+3] == material.a) 
+        && this.colors[i*4] == material.r && this.colors[i*4+1] == material.g && this.colors[i*4+2] == material.b && this.colors[i*4+3] == material.a
+        && ((this.vertexMaterials[i] == 0 && !material.isFire) || (this.vertexMaterials[i] == 1 && material.isFire)))
         return i;
     }
     return -1;
@@ -125,6 +135,8 @@ var model = {
       y: v.y / z,
       z: v.z / z
     }
+  },
+  update: function(deltaTime, totalTime) {
   }
 };
 
@@ -146,19 +158,18 @@ function main() {
     return;
   }
 
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
   // Vertex shader program
 
   const vsSource = `
     attribute vec4 aVertexPosition;
     attribute vec3 aVertexNormal;
     attribute vec4 aVertexColor;
+    attribute float aVertexMaterial;
 
     uniform mat4 uNormalMatrix;
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
+    uniform float uGameTime;
 
     varying lowp vec4 vColor;
     varying highp vec3 vLighting;
@@ -167,19 +178,25 @@ function main() {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
       vColor = aVertexColor;
       
-      // Apply lighting effect
-      
-      highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
-      highp vec3 directionalLightColor = vec3(1, 1, 1);
-      highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
+      if (aVertexMaterial == 1.0) {
+        vColor = vec4(1.0, (sin(uGameTime * 20.0) + 1.0) / 2.0, 0.0, 1.0);
+        vLighting = vec3(1.0, 1.0, 1.0);
+      } else {
+        vColor = aVertexColor;
 
-      highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+        // Apply lighting effect
+        highp vec3 ambientLight = vec3(0.3, 0.3, 0.3);
+        highp vec3 directionalLightColor = vec3(1, 1, 1);
+        highp vec3 directionalVector = normalize(vec3(0.85, 0.8, 0.75));
 
-      highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
-      vLighting = ambientLight + (directionalLightColor * directional);
+        highp vec4 transformedNormal = uNormalMatrix * vec4(aVertexNormal, 1.0);
+
+        highp float directional = max(dot(transformedNormal.xyz, directionalVector), 0.0);
+        vLighting = ambientLight + (directionalLightColor * directional);
+      }
     }
   `;
-  
+
   // Fragment shader program
 
   const fsSource = `
@@ -205,11 +222,13 @@ function main() {
       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
       vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
       vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+      vertexMaterial: gl.getAttribLocation(shaderProgram, 'aVertexMaterial'),
     },
     uniformLocations: {
       projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
       modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
       normalMatrix: gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
+      gameTime: gl.getUniformLocation(shaderProgram, 'uGameTime')
     },
   };
 
@@ -224,6 +243,8 @@ function main() {
     now *= 0.001;  // convert to seconds
     const deltaTime = now - then;
     then = now;
+
+    gl.uniform1f(programInfo.uniformLocations.gameTime, now);
 
     drawScene(gl, programInfo, buffers, deltaTime);
 
@@ -256,11 +277,16 @@ function initBuffers(gl, model) {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.indices), gl.STATIC_DRAW);
 
+  const materialBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, materialBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertexMaterials), gl.STATIC_DRAW);
+
   return {
     position: positionBuffer,
     normal: normalBuffer,
     color: colorBuffer,
     indices: indexBuffer,
+    material: materialBuffer
   };
 }
 
@@ -271,7 +297,11 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-  gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+  gl.depthFunc(gl.LESS);              // Near things obscure far things
+
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.enable(gl.BLEND);
+  //gl.disable(gl.DEPTH_TEST);           
 
   // Clear the canvas before we start drawing on it.
 
@@ -360,7 +390,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     gl.enableVertexAttribArray(
         programInfo.attribLocations.vertexNormal);
   }
-
+  
   // Tell WebGL how to pull out the colors from the color buffer
   // into the vertexColor attribute.
   {
@@ -379,6 +409,26 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
         offset);
     gl.enableVertexAttribArray(
         programInfo.attribLocations.vertexColor);
+  }
+
+  // Tell WebGL how to pull out the material info from the vertexMaterial buffer
+  // into the vertexColor attribute.
+  {
+    const numComponents = 1;
+    const type = gl.FLOAT;
+    const normalize = false;
+    const stride = 0;
+    const offset = 0;
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.material);
+    gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexMaterial,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+    gl.enableVertexAttribArray(
+        programInfo.attribLocations.vertexMaterial);
   }
 
   // Tell WebGL which indices to use to index the vertices
