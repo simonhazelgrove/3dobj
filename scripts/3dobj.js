@@ -16,40 +16,74 @@ var model = {
       // Fire
       r: 1, g: 0, b: 0, a: 1,
       isFire: true
+    },
+    {
+      // Black paint
+      r: 0.1, g: 0.1, b: 0.1, a: 1,
+      isFire: false
     }
   ],
   points: [
     // Front corners
     {
-      x: -1.0, y: -1.0, z: 1.0
+      x: -0.1, y: -0.1, z: 1.0
     },
     {
-      x: 1.0, y: -1.0, z: 1.0
+      x: 0.1, y: -0.1, z: 1.0
     },
     {
-      x: 1.0, y: 1.0, z: 1.0
+      x: 0.1, y: 0.1, z: 1.0
     },
     {
-      x: -1.0, y: 1.0, z: 1.0
+      x: -0.1, y: 0.1, z: 1.0
     },
     // Back corners
     {
-      x: -1.0, y: -1.0, z: -1.0
+      x: -0.1, y: -0.1, z: -1.0
     },
     {
-      x: 1.0, y: -1.0, z: -1.0
+      x: 0.1, y: -0.1, z: -1.0
     },
     {
-      x: 1.0, y: 1.0, z: -1.0
+      x: 0.1, y: 0.1, z: -1.0
     },
     {
-      x: -1.0, y: 1.0, z: -1.0
-    }
+      x: -0.1, y: 0.1, z: -1.0
+    },
+    // Front point
+    {
+      x: 0, y: 0, z: 1.5
+    },
+    // Left wing
+    {
+      x: -0.1, y: 0, z: 0.5
+    },
+    {
+      x: -0.8, y: 0, z: -0.9
+    },
+    {
+      x: -0.1, y: 0, z: -0.9
+    },
+    // right wing
+    {
+      x: 0.1, y: 0, z: 0.5
+    },
+    {
+      x: 0.8, y: 0, z: -0.9
+    },
+    {
+      x: 0.1, y: 0, z: -0.9
+    },
   ],
   triangles: [
-    // Front triangles
-    { p1: 0, p2: 1, p3: 2, material: 1 },      
-    { p1: 0, p2: 2, p3: 3, material: 1 },
+    // Wings
+    { p1: 9, p2: 10, p3: 11, material: 0 },
+    { p1: 12, p2: 13, p3: 14, material: 0 },
+    // Front cone
+    { p1: 8, p2: 0, p3: 1, material: 3 },      
+    { p1: 8, p2: 1, p3: 2, material: 3 },
+    { p1: 8, p2: 2, p3: 3, material: 3 },
+    { p1: 8, p2: 3, p3: 0, material: 3 },
     // Back triangles
     { p1: 5, p2: 4, p3: 7, material: 2 },
     { p1: 5, p2: 7, p3: 6, material: 2 },
@@ -244,9 +278,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    gl.uniform1f(programInfo.uniformLocations.gameTime, now);
-
-    drawScene(gl, programInfo, buffers, deltaTime);
+    drawScene(gl, programInfo, buffers, now, deltaTime);
 
     requestAnimationFrame(render);
   }
@@ -293,7 +325,7 @@ function initBuffers(gl, model) {
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers, deltaTime) {
+function drawScene(gl, programInfo, buffers, gameTime, deltaTime) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -452,7 +484,8 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     programInfo.uniformLocations.normalMatrix,
     false,
     normalMatrix);
-  
+  gl.uniform1f(programInfo.uniformLocations.gameTime, gameTime);
+      
   {
     const vertexCount = 36;
     const type = gl.UNSIGNED_SHORT;
