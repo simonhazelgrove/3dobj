@@ -74,11 +74,39 @@ var model = {
     {
       x: 0.1, y: 0, z: -0.9
     },
+    // back fin
+    {
+      x: 0, y: 0.1, z: -0.4
+    },
+    {
+      x: 0, y: 0.6, z: -1.0
+    },
+    {
+      x: 0, y: 0.1, z: -1.0
+    },
+    // Cockpit
+    {
+      x: 0, y: 0.1, z: 1      // front
+    },
+    {
+      x: -0.1, y: 0.1, z: 0.8 // left 
+    },
+    {
+      x: 0, y: 0.1, z: 0.2    // back
+    },
+    {
+      x: 0.1, y: 0.1, z: 0.8  // right
+    },
+    {
+      x: 0, y: 0.2, z: 0.8    // top
+    },
   ],
   triangles: [
-    // Wings
-    { p1: 9, p2: 10, p3: 11, material: 0 },
-    { p1: 12, p2: 13, p3: 14, material: 0 },
+    // Cockpit
+    { p1: 18, p2: 21, p3: 22, material: 1},
+    { p1: 21, p2: 20, p3: 22, material: 1},
+    { p1: 20, p2: 19, p3: 22, material: 1},
+    { p1: 19, p2: 18, p3: 22, material: 1},
     // Front cone
     { p1: 8, p2: 0, p3: 1, material: 3 },      
     { p1: 8, p2: 1, p3: 2, material: 3 },
@@ -98,7 +126,16 @@ var model = {
     { p1: 3, p2: 6, p3: 7, material: 0 },
     // Bottom triangles
     { p1: 4, p2: 5, p3: 1, material: 0 },
-    { p1: 4, p2: 1, p3: 0, material: 0 }
+    { p1: 4, p2: 1, p3: 0, material: 0 },
+    // Left wing (top & bottom triangles)
+    { p1: 9, p2: 10, p3: 11, material: 0 },
+    { p1: 11, p2: 10, p3: 9, material: 0 },
+    // Right wing (top & bottom triangles)
+    { p1: 12, p2: 13, p3: 14, material: 0 },
+    { p1: 14, p2: 13, p3: 12, material: 0 },
+    // Back fin (left & right triangles)
+    { p1: 15, p2: 16, p3: 17, material: 0 },
+    { p1: 17, p2: 16, p3: 15, material: 0 },
   ],
   compile: function()
   {
@@ -278,7 +315,7 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, programInfo, buffers, now, deltaTime);
+    drawScene(gl, programInfo, buffers, now, deltaTime, model);
 
     requestAnimationFrame(render);
   }
@@ -325,7 +362,7 @@ function initBuffers(gl, model) {
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers, gameTime, deltaTime) {
+function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -333,7 +370,9 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime) {
 
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.enable(gl.BLEND);
-  //gl.disable(gl.DEPTH_TEST);           
+  //gl.disable(gl.DEPTH_TEST);
+  
+  gl.enable(gl.CULL_FACE);
 
   // Clear the canvas before we start drawing on it.
 
@@ -487,7 +526,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime) {
   gl.uniform1f(programInfo.uniformLocations.gameTime, gameTime);
       
   {
-    const vertexCount = 36;
+    const vertexCount = model.triangles.length * 3;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
