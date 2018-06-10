@@ -103,39 +103,36 @@ var model = {
   ],
   triangles: [
     // Cockpit
-    { p1: 18, p2: 21, p3: 22, material: 1},
-    { p1: 21, p2: 20, p3: 22, material: 1},
-    { p1: 20, p2: 19, p3: 22, material: 1},
-    { p1: 19, p2: 18, p3: 22, material: 1},
+    { p1: 18, p2: 21, p3: 22, material: 1, renderBothSides: false },
+    { p1: 21, p2: 20, p3: 22, material: 1, renderBothSides: false},
+    { p1: 20, p2: 19, p3: 22, material: 1, renderBothSides: false},
+    { p1: 19, p2: 18, p3: 22, material: 1, renderBothSides: false},
     // Front cone
-    { p1: 8, p2: 0, p3: 1, material: 3 },      
-    { p1: 8, p2: 1, p3: 2, material: 3 },
-    { p1: 8, p2: 2, p3: 3, material: 3 },
-    { p1: 8, p2: 3, p3: 0, material: 3 },
-    // Back triangles
-    { p1: 5, p2: 4, p3: 7, material: 2 },
-    { p1: 5, p2: 7, p3: 6, material: 2 },
-    // Left triangles
-    { p1: 4, p2: 0, p3: 3, material: 0 },
-    { p1: 4, p2: 3, p3: 7, material: 0 },
-    // Right triangles
-    { p1: 1, p2: 5, p3: 6, material: 0 },
-    { p1: 1, p2: 6, p3: 2, material: 0 },
-    // Top triangles
-    { p1: 3, p2: 2, p3: 6, material: 0 },
-    { p1: 3, p2: 6, p3: 7, material: 0 },
-    // Bottom triangles
-    { p1: 4, p2: 5, p3: 1, material: 0 },
-    { p1: 4, p2: 1, p3: 0, material: 0 },
-    // Left wing (top & bottom triangles)
-    { p1: 9, p2: 10, p3: 11, material: 0 },
-    { p1: 11, p2: 10, p3: 9, material: 0 },
-    // Right wing (top & bottom triangles)
-    { p1: 12, p2: 13, p3: 14, material: 0 },
-    { p1: 14, p2: 13, p3: 12, material: 0 },
-    // Back fin (left & right triangles)
-    { p1: 15, p2: 16, p3: 17, material: 0 },
-    { p1: 17, p2: 16, p3: 15, material: 0 },
+    { p1: 8, p2: 0, p3: 1, material: 3, renderBothSides: false },      
+    { p1: 8, p2: 1, p3: 2, material: 3, renderBothSides: false },
+    { p1: 8, p2: 2, p3: 3, material: 3, renderBothSides: false },
+    { p1: 8, p2: 3, p3: 0, material: 3, renderBothSides: false },
+    // Jet pipe
+    { p1: 5, p2: 4, p3: 7, material: 2, renderBothSides: false },
+    { p1: 5, p2: 7, p3: 6, material: 2, renderBothSides: false },
+    // Left fuselage panel
+    { p1: 4, p2: 0, p3: 3, material: 0, renderBothSides: false },
+    { p1: 4, p2: 3, p3: 7, material: 0, renderBothSides: false },
+    // Right fuselage panel
+    { p1: 1, p2: 5, p3: 6, material: 0, renderBothSides: false },
+    { p1: 1, p2: 6, p3: 2, material: 0, renderBothSides: false },
+    // Top fuselage panel
+    { p1: 3, p2: 2, p3: 6, material: 0, renderBothSides: false },
+    { p1: 3, p2: 6, p3: 7, material: 0, renderBothSides: false },
+    // Bottom fuselage panel
+    { p1: 4, p2: 5, p3: 1, material: 0, renderBothSides: false },
+    { p1: 4, p2: 1, p3: 0, material: 0, renderBothSides: false },
+    // Left wing
+    { p1: 9, p2: 10, p3: 11, material: 0, renderBothSides: true },
+    // Right wing
+    { p1: 12, p2: 13, p3: 14, material: 0, renderBothSides: true },
+    // Back fin
+    { p1: 15, p2: 16, p3: 17, material: 0, renderBothSides: true },
   ],
   compile: function()
   {
@@ -157,6 +154,13 @@ var model = {
     this.compilePoint(p1, normal, material);
     this.compilePoint(p2, normal, material);
     this.compilePoint(p3, normal, material);
+    if (triangle.renderBothSides) {
+      // Render opposite side of triangle
+      normal = this.normalFromTriangle(p3, p2, p1);
+      this.compilePoint(p3, normal, material);
+      this.compilePoint(p2, normal, material);
+      this.compilePoint(p1, normal, material);
+      }
   },
   compilePoint: function(p, normal, material) {
     var i = this.getIndex(p, normal, material);
@@ -526,7 +530,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
   gl.uniform1f(programInfo.uniformLocations.gameTime, gameTime);
       
   {
-    const vertexCount = model.triangles.length * 3;
+    const vertexCount = model.indices.length;
     const type = gl.UNSIGNED_SHORT;
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
