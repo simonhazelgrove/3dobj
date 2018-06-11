@@ -1,6 +1,7 @@
 var cubeRotation = 0.0;
 
 var model = {
+  gl: null,
   materials: [
     {
       // Painted metal
@@ -24,81 +25,97 @@ var model = {
     }
   ],
   points: [
-    // Front corners
     {
+      name: "fuselage.front.bottomleft",
       x: -0.1, y: -0.1, z: 1.0
     },
     {
+      name: "fuselage.front.bottomright",
       x: 0.1, y: -0.1, z: 1.0
     },
     {
+      name: "fuselage.front.topleft",
       x: 0.1, y: 0.1, z: 1.0
     },
     {
+      name: "fuselage.front.topright",
       x: -0.1, y: 0.1, z: 1.0
     },
-    // Back corners
     {
+      name: "fuselage.back.bottomleft",
       x: -0.1, y: -0.1, z: -1.0
     },
     {
+      name: "fuselage.back.bottomright",
       x: 0.1, y: -0.1, z: -1.0
     },
     {
+      name: "fuselage.back.topleft",
       x: 0.1, y: 0.1, z: -1.0
     },
     {
+      name: "fuselage.back.topright",
       x: -0.1, y: 0.1, z: -1.0
     },
-    // Front point
     {
+      name: "nosecone.tip",
       x: 0, y: 0, z: 1.5
     },
-    // Left wing
     {
+      name: "wing.left.front",
       x: -0.1, y: 0, z: 0.5
     },
     {
+      name: "wing.left.tip",
       x: -0.8, y: 0, z: -0.9
     },
     {
+      name: "wing.left.backroot",
       x: -0.1, y: 0, z: -0.9
     },
-    // right wing
     {
+      name: "wing.right.front",
       x: 0.1, y: 0, z: 0.5
     },
     {
+      name: "wing.right.tip",
       x: 0.8, y: 0, z: -0.9
     },
     {
+      name: "wing.right.backroot",
       x: 0.1, y: 0, z: -0.9
     },
-    // back fin
     {
+      name: "fin.front",
       x: 0, y: 0.1, z: -0.4
     },
     {
+      name: "fin.tip",
       x: 0, y: 0.6, z: -1.0
     },
     {
+      name: "fin.backroot",
       x: 0, y: 0.1, z: -1.0
     },
-    // Cockpit
     {
-      x: 0, y: 0.1, z: 1      // front
+      name: "cockpit.front",
+      x: 0, y: 0.1, z: 1
     },
     {
-      x: -0.1, y: 0.1, z: 0.8 // left 
+      name: "cockpit.left",
+      x: -0.1, y: 0.1, z: 0.8 
     },
     {
-      x: 0, y: 0.1, z: 0.2    // back
+      name: "cockpit.back",
+      x: 0, y: 0.1, z: 0.2
     },
     {
-      x: 0.1, y: 0.1, z: 0.8  // right
+      name: "cockpit.right",
+      x: 0.1, y: 0.1, z: 0.8
     },
     {
-      x: 0, y: 0.2, z: 0.8    // top
+      name: "cockpit.top",
+      x: 0, y: 0.2, z: 0.8
     },
   ],
   triangles: [
@@ -134,16 +151,18 @@ var model = {
     // Back fin
     { p1: 15, p2: 16, p3: 17, material: 0, renderBothSides: true },
   ],
-  compile: function()
+  compile: function(gl)
   {
-    this.vertices = [],
-    this.normals = [],
-    this.colors = [],
-    this.indices = [],
+    this.gl = gl == null ? this.gl : gl;
+    this.vertices = [];
+    this.normals = [];
+    this.colors = [];
+    this.indices = [];
     this.vertexMaterials = [];
     for(var i=0; i < this.triangles.length; i++) {
       this.compileTriangle(this.triangles[i]);
     }
+    this.initBuffers();
   },
   compileTriangle: function (triangle) {
     var p1 = this.points[triangle.p1];
@@ -211,11 +230,47 @@ var model = {
       z: v.z / z
     }
   },
+  initBuffers: function() {
+    if (this.buffers.position === null) {
+      this.buffers.position = this.gl.createBuffer();
+      this.buffers.normal = this.gl.createBuffer();
+      this.buffers.color = this.gl.createBuffer();
+      this.buffers.indices = this.gl.createBuffer();
+      this.buffers.material = this.gl.createBuffer();
+    }
+    this.updateBuffers();
+  },  
+  updateBuffers: function() {
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.position);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+  
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.normal);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.normals), this.gl.STATIC_DRAW);
+  
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.color);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.colors), this.gl.STATIC_DRAW);
+  
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.STATIC_DRAW);
+  
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffers.material);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertexMaterials), this.gl.STATIC_DRAW);
+  },
+  vertices: null,
+  normals: null,
+  colors: null,
+  indices: null,
+  vertexMaterials: null,
+  buffers: {
+    position: null,
+    normal: null,
+    color: null,
+    indices: null,
+    material: null
+  },
   update: function(deltaTime, totalTime) {
   }
 };
-
-model.compile();
 
 main();
 
@@ -232,6 +287,8 @@ function main() {
     alert('Unable to initialize WebGL. Your browser or machine may not support it.');
     return;
   }
+
+  model.compile(gl);
 
   // Vertex shader program
 
@@ -307,10 +364,6 @@ function main() {
     },
   };
 
-  // Here's where we call the routine that builds all the
-  // objects we'll be drawing.
-  const buffers = initBuffers(gl, model);
-
   var then = 0;
 
   // Draw the scene repeatedly
@@ -319,54 +372,20 @@ function main() {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, programInfo, buffers, now, deltaTime, model);
+    drawScene(gl, programInfo, now, deltaTime, model);
+
+    model.update(deltaTime, now);
 
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
 }
 
-//
-// initBuffers
-//
-// Initialize the buffers we'll need. For this demo, we just
-// have one object -- a simple three-dimensional cube.
-//
-function initBuffers(gl, model) {
-
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertices), gl.STATIC_DRAW);
-
-  const normalBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.normals), gl.STATIC_DRAW);
-
-  const colorBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.colors), gl.STATIC_DRAW);
-
-  const indexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(model.indices), gl.STATIC_DRAW);
-
-  const materialBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, materialBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertexMaterials), gl.STATIC_DRAW);
-
-  return {
-    position: positionBuffer,
-    normal: normalBuffer,
-    color: colorBuffer,
-    indices: indexBuffer,
-    material: materialBuffer
-  };
-}
 
 //
 // Draw the scene.
 //
-function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
+function drawScene(gl, programInfo, gameTime, deltaTime, model) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -434,7 +453,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.buffers.position);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexPosition,
         numComponents,
@@ -454,7 +473,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.buffers.normal);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexNormal,
         numComponents,
@@ -474,7 +493,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.buffers.color);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexColor,
         numComponents,
@@ -494,7 +513,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
     const normalize = false;
     const stride = 0;
     const offset = 0;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffers.material);
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.buffers.material);
     gl.vertexAttribPointer(
         programInfo.attribLocations.vertexMaterial,
         numComponents,
@@ -507,7 +526,7 @@ function drawScene(gl, programInfo, buffers, gameTime, deltaTime, model) {
   }
 
   // Tell WebGL which indices to use to index the vertices
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.buffers.indices);
 
   // Tell WebGL to use our program when drawing
 

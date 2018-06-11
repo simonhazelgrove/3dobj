@@ -3,12 +3,55 @@
   <head>
     <meta charset="utf-8">
     <title>3D Obj</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   </head>
 
   <body>
-    <canvas id="glcanvas" width="640" height="480"></canvas>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col"/>
+          <h1>3D Object Editor</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <canvas id="glcanvas" width="640" height="480"></canvas>
+        </div>
+        <div class="col">
+          <div id="ui">
+
+            <form id="points-list" class="form-inline">
+              <div class="row" v-for="point in points">
+                <label class="sr-only" for="pointname">Name</label>
+                <input type="text" v-model="point.name" class="form-control mb-2 mr-sm-2" id="pointname" placeholder="Name">
+              
+                <label class="sr-only" for="pointx">X</label>
+                <input type="number" v-model="point.x" class="form-control mb-2 mr-sm-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2">
+              
+                <label class="sr-only" for="pointy">Y</label>
+                <input type="number" v-model="point.y" class="form-control mb-2 mr-sm-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2">
+              
+                <label class="sr-only" for="pointy">Z</label>
+                <input type="number" v-model="point.z" class="form-control mb-2 mr-sm-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2">
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
+  
+  <!-- development version, includes helpful console warnings -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 
   <script src="scripts/gl-matrix.js"></script>
   <script src="scripts/3dobj.js"></script>
+  <script src="scripts/3dui.js"></script>
+
 </html>
