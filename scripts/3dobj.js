@@ -4,22 +4,22 @@ var model = {
   gl: null,
   materials: [
     {
-      // Painted metal
+      name: "Painted metal",
       r: 0.5, g: 0.54, b: 0.5, a: 1.0,
       isFire: false
     },
     {
-      // Glass
+      name: "Glass",
       r: 0, g: 0, b: 1, a: 0.5,
       isFire: false
     },
     {
-      // Fire
+      name: "Fire",
       r: 1, g: 0, b: 0, a: 1,
       isFire: true
     },
     {
-      // Black paint
+      name: "Black paint",
       r: 0.1, g: 0.1, b: 0.1, a: 1,
       isFire: false
     }

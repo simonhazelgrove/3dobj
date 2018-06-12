@@ -4,7 +4,7 @@ var app = new Vue({
   })
 
 $(document).ready(function(){
-  $("#points-list input").change(function(){
+  $("#material-list input, #points-list input, #triangles-list input, #triangles-list select").change(function(){
     model.compile();
   });
 });
