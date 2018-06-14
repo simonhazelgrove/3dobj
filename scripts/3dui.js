@@ -2,6 +2,7 @@ var app = new Vue({
   el: '#ui',
   data: model,
   methods: {
+    // Add objects
     addMaterial: function() {
       model.materials.push({
         name: "",
@@ -21,6 +22,7 @@ var app = new Vue({
         material: -1, 
         renderBothSides: false });
     },
+    // Delete objects
     deleteMaterial: function(index) {
       var showInUseMessage = model.triangles.some(function(triangle){ return triangle.material == index; });
       var message = showInUseMessage 
@@ -79,6 +81,7 @@ var app = new Vue({
         model.compile();
       }
     },
+    // Clear lists
     clearMaterials: function() {
       var showInUseMessage = model.triangles.length > 0;
       var message = showInUseMessage 
@@ -108,6 +111,7 @@ var app = new Vue({
         model.compile();
       }
     },
+    // Property changed listeners
     materialChanged: function() {
       model.compile();
     },
@@ -116,6 +120,41 @@ var app = new Vue({
     },
     triangleChanged: function() {
       model.compile();
+    },
+    exportJson: function() {
+      var json = this.modelJson;
+      copyTextToClipboard(json);
     }
-  }
+  },
+  computed: {
+    modelJson: function () {
+      var cleanModel = {
+        materials: model.materials,
+        points: model.points,
+        triangles: model.triangles
+      };
+      var json = JSON.stringify(cleanModel, null, 2);
+      return json.trim();
+    }
+  }  
 });
+
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Fallback: Copying text command was ' + msg);
+
+    alert("Text copied to clipboard.");
+  } catch (err) {
+    console.error('Fallback: Oops, unable to copy', err);
+  }
+
+  document.body.removeChild(textArea);
+}

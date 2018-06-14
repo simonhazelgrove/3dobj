@@ -1,0 +1,9 @@
+pre.codeblock {
+    display: block;
+    height: 150px;
+}
+
+pre.codeblock button.float-right {
+    position: sticky;
+    top: 0;
+}
