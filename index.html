@@ -83,21 +83,34 @@
 
                 <h2>Define points within the model</h2>
 
+                <div class="row mb-2">
+                  <div class="col">
+                    <button type="button" class="btn" v-on:click="clearPoints"><i class="fas fa-trash-alt"></i> Clear</button>
+                    <button type="button" class="btn" v-on:click="addPoint"><i class="fas fa-plus"></i> Add</button>
+                  </div>
+                </div>
+
                 <form id="points-list" class="form-inline">
-                    <div class="row" v-for="point in points">
-                      <label class="sr-only" for="pointname">Name</label>
-                      <input type="text" v-model="point.name" class="form-control mb-2 mr-sm-2" id="pointname" placeholder="Name">
-                    
-                      <label class="sr-only" for="pointx">X</label>
-                      <input type="number" v-model="point.x" class="form-control mb-2 mr-sm-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2">
-                    
-                      <label class="sr-only" for="pointy">Y</label>
-                      <input type="number" v-model="point.y" class="form-control mb-2 mr-sm-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2">
-                    
-                      <label class="sr-only" for="pointy">Z</label>
-                      <input type="number" v-model="point.z" class="form-control mb-2 mr-sm-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2">
+                  <div class="row" v-for="(point, index) in points">
+                    <label class="sr-only" for="pointname">Name</label>
+                    <input type="text" v-model="point.name" class="form-control mb-2 mr-sm-2" id="pointname" placeholder="Name">
+                  
+                    <label class="sr-only" for="pointx">X</label>
+                    <input type="number" v-model="point.x" class="form-control mb-2 mr-sm-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2">
+                  
+                    <label class="sr-only" for="pointy">Y</label>
+                    <input type="number" v-model="point.y" class="form-control mb-2 mr-sm-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2">
+                  
+                    <label class="sr-only" for="pointy">Z</label>
+                    <input type="number" v-model="point.z" class="form-control mb-2 mr-sm-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2">
+
+                    <div class="col">
+                      <button type="button" class="btn btn-sm" v-on:click="deletePoint(index)">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
                     </div>
-                  </form>
+                  </div>
+                </form>
 
               </div>
               <div class="tab-pane" id="triangles" role="tabpanel" aria-labelledby="triangles-tab">

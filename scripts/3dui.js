@@ -9,6 +9,12 @@ var app = new Vue({
           isFire: false
         });
       },
+      addPoint: function() {
+        model.points.push({
+          name: "",
+          x: 0, y: 0, z: 0
+        });
+      },
       deleteMaterial: function(index) {
         var showInUseMessage = model.triangles.some(function(triangle){ return triangle.material == index; });
         var message = showInUseMessage 
@@ -21,12 +27,41 @@ var app = new Vue({
               model.triangles.splice(i, 1);
               i--;
             } else if (model.triangles[i].material > index) {
-              // Adjust index of materials after the one being deleted
+              // Adjust index of materials greater than the one being deleted
               model.triangles[i].material -= 1; 
             }
           }
           // Delete the material
           model.materials.splice(index, 1);
+          model.compile();
+        }
+      },
+      deletePoint: function(index) {
+        var showInUseMessage = model.triangles.some(function(triangle){ return triangle.p1 == index || triangle.p2 == index || triangle.p3 == index; });
+        var message = showInUseMessage 
+          ? "This point is in use.  Triangles that use it will also be removed - are you sure?"
+          : "Are you sure you want to delete this point?";
+        if (confirm(message)){
+          for(var i = 0; i < model.triangles.length; i++) {
+            if (model.triangles[i].p1 == index || model.triangles[i].p2 == index || model.triangles[i].p3 == index) {
+              // Remove triangle
+              model.triangles.splice(i, 1);
+              i--;
+            } else { 
+              // Adjust index of points greater than the one being deleted
+              if (model.triangles[i].p1 > index) {
+                model.triangles[i].p1 -= 1; 
+              }
+              if (model.triangles[i].p2 > index) {
+                model.triangles[i].p2 -= 1; 
+              }
+              if (model.triangles[i].p3 > index) {
+                model.triangles[i].p3 -= 1; 
+              }
+            }
+          }
+          // Delete the point
+          model.points.splice(index, 1);
           model.compile();
         }
       },
@@ -38,6 +73,17 @@ var app = new Vue({
         if (confirm(message)){
           model.triangles.splice(0);
           model.materials.splice(0);
+          model.compile();
+        }
+      },
+      clearPoints: function() {
+        var showInUseMessage = model.triangles.length > 0;
+        var message = showInUseMessage 
+          ? "Some of these points are in use.  The Triangles list will also be cleared - are you sure?"
+          : "Are you sure you want to remove all points?";
+        if (confirm(message)){
+          model.triangles.splice(0);
+          model.points.splice(0);
           model.compile();
         }
       }
