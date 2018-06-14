@@ -5,6 +5,7 @@
     <title>3D Obj</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
   </head>
 
   <body>
@@ -40,26 +41,39 @@
                 
                 <h2>Colours and shading information</h2>
 
+                <div class="row mb-2">
+                  <div class="col">
+                    <button type="button" class="btn" v-on:click="clearMaterials"><i class="fas fa-trash-alt"></i> Clear</button>
+                    <button type="button" class="btn" v-on:click="addMaterial"><i class="fas fa-plus"></i> Add</button>
+                  </div>
+                </div>
+
                 <form id="material-list" class="form-inline">
-                    <div class="row" v-for="material in materials">
+                    <div class="row" v-for="(material, index) in materials">
                       <label class="sr-only" for="materialname">Name</label>
                       <input type="text" v-model="material.name" class="form-control mb-2 mr-sm-2" id="materialname" placeholder="Name">
-                    
+                  
                       <label class="sr-only" for="materialr">R</label>
                       <input type="number" v-model="material.r" class="form-control mb-2 mr-sm-2" id="materialr" placeholder="R" step="0.1" min="0" max="1">
-                    
+
                       <label class="sr-only" for="materialr">G</label>
                       <input type="number" v-model="material.g" class="form-control mb-2 mr-sm-2" id="materialg" placeholder="G" step="0.1" min="0" max="1">
-                    
+
                       <label class="sr-only" for="materialr">B</label>
                       <input type="number" v-model="material.b" class="form-control mb-2 mr-sm-2" id="materialb" placeholder="R" step="0.1" min="0" max="1">
-                    
+
                       <label class="sr-only" for="materialr">A</label>
                       <input type="number" v-model="material.a" class="form-control mb-2 mr-sm-2" id="materiala" placeholder="A" step="0.1" min="0" max="1">
-                    
+
                       <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" v-model="material.isFire" id="materialisfire">
                         <label class="form-check-label" for="materialisfire">Is Fire</label>
+                      </div>
+
+                      <div class="col">
+                        <button type="button" class="btn btn-sm" v-on:click="deleteMaterial(index)">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
                       </div>
                     </div>
                   </form>
@@ -126,6 +140,7 @@
         </div>
       </div>
     </div>
+
   </body>
   
   <!-- development version, includes helpful console warnings -->
