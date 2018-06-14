@@ -51,19 +51,19 @@
                 <form id="material-list" class="form-inline">
                     <div class="row" v-for="(material, index) in materials">
                       <label class="sr-only" for="materialname">Name</label>
-                      <input type="text" v-model="material.name" class="form-control mb-2 mr-sm-2" id="materialname" placeholder="Name" v-on:change="materialChanged">
+                      <input type="text" v-model="material.name" class="form-control form-control-sm mb-2 mr-2" id="materialname" placeholder="Name" v-on:change="materialChanged">
                   
                       <label class="sr-only" for="materialr">R</label>
-                      <input type="number" v-model="material.r" class="form-control mb-2 mr-sm-2" id="materialr" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                      <input type="number" v-model="material.r" class="form-control form-control-sm mb-2 mr-2" id="materialr" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
                       <label class="sr-only" for="materialr">G</label>
-                      <input type="number" v-model="material.g" class="form-control mb-2 mr-sm-2" id="materialg" placeholder="G" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                      <input type="number" v-model="material.g" class="form-control form-control-sm mb-2 mr-2" id="materialg" placeholder="G" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
                       <label class="sr-only" for="materialr">B</label>
-                      <input type="number" v-model="material.b" class="form-control mb-2 mr-sm-2" id="materialb" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                      <input type="number" v-model="material.b" class="form-control form-control-sm mb-2 mr-2" id="materialb" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
                       <label class="sr-only" for="materialr">A</label>
-                      <input type="number" v-model="material.a" class="form-control mb-2 mr-sm-2" id="materiala" placeholder="A" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                      <input type="number" v-model="material.a" class="form-control form-control-sm mb-2 mr-2" id="materiala" placeholder="A" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
                       <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" v-model="material.isFire" id="materialisfire" v-on:change="materialChanged">
@@ -93,16 +93,16 @@
                 <form id="points-list" class="form-inline">
                   <div class="row" v-for="(point, index) in points">
                     <label class="sr-only" for="pointname">Name</label>
-                    <input type="text" v-model="point.name" class="form-control mb-2 mr-sm-2" id="pointname" placeholder="Name" v-on:change="pointChanged">
+                    <input type="text" v-model="point.name" class="form-control form-control-sm mb-2 mr-2" id="pointname" placeholder="Name" v-on:change="pointChanged">
                   
                     <label class="sr-only" for="pointx">X</label>
-                    <input type="number" v-model="point.x" class="form-control mb-2 mr-sm-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                    <input type="number" v-model="point.x" class="form-control form-control-sm mb-2 mr-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2" v-on:change="pointChanged">
                   
                     <label class="sr-only" for="pointy">Y</label>
-                    <input type="number" v-model="point.y" class="form-control mb-2 mr-sm-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                    <input type="number" v-model="point.y" class="form-control form-control-sm mb-2 mr-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2" v-on:change="pointChanged">
                   
                     <label class="sr-only" for="pointy">Z</label>
-                    <input type="number" v-model="point.z" class="form-control mb-2 mr-sm-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                    <input type="number" v-model="point.z" class="form-control form-control-sm mb-2 mr-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2" v-on:change="pointChanged">
 
                     <div class="col">
                       <button type="button" class="btn btn-sm" v-on:click="deletePoint(index)">
@@ -127,22 +127,22 @@
                   <form id="triangles-list" class="form-inline">
                       <div class="row" v-for="(triangle, index) in triangles">
                         <label class="sr-only" for="p1">P1</label>
-                        <select id="p1" v-model="triangle.p1" class="form-control" v-on:change="triangleChanged">
+                        <select id="p1" v-model="triangle.p1" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
                           <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
                         </select>
                         
                         <label class="sr-only" for="p2">P2</label>
-                        <select id="p2" v-model="triangle.p2" class="form-control" v-on:change="triangleChanged">
+                        <select id="p2" v-model="triangle.p2" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
                           <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
                         </select>
                         
                         <label class="sr-only" for="p3">P3</label>
-                        <select id="p3" v-model="triangle.p3" class="form-control" v-on:change="triangleChanged">
+                        <select id="p3" v-model="triangle.p3" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
                           <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
                         </select>
                         
                         <label class="sr-only" for="trianglematerial">Material</label>
-                        <select id="trianglematerial" v-model="triangle.material" class="form-control" v-on:change="triangleChanged">
+                        <select id="trianglematerial" v-model="triangle.material" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
                           <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
                         </select>
                           
