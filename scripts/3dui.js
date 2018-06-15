@@ -9,18 +9,22 @@ var app = new Vue({
         r: 0.5, g: 0.5, b: 0.5, a: 1.0,
         isFire: false
       });
+      setTimeout(function(){ scrollToBottom("materials-container"); }, 0);
     },
     addPoint: function() {
       model.points.push({
         name: "",
         x: 0, y: 0, z: 0
       });
+      setTimeout(function(){ scrollToBottom("points-container"); }, 0);
     },
     addTriangle: function() {
       model.triangles.push({ 
         p1: -1, p2: -1, p3: -1, 
         material: -1, 
-        renderBothSides: false });
+        renderBothSides: false 
+      });
+      setTimeout(function(){ scrollToBottom("triangles-container"); }, 0);
     },
     // Delete objects
     deleteMaterial: function(index) {
@@ -138,6 +142,12 @@ var app = new Vue({
     }
   }  
 });
+
+function scrollToBottom(id) {
+  var div = document.getElementById(id);
+  //div.scrollTop = div.scrollHeight;
+  div.scrollTop = div.scrollHeight - div.clientHeight;
+}
 
 function copyTextToClipboard(text) {
   var textArea = document.createElement("textarea");
