@@ -28,19 +28,24 @@ var app = new Vue({
     },
     // Delete objects
     deleteMaterial: function(index) {
-      var showInUseMessage = model.triangles.some(function(triangle){ return triangle.material == index; });
+      var showInUseMessage = model.triangles.some(function(triangle){ return triangle.materiala == index || triangle.materialb == index; });
       var message = showInUseMessage 
         ? "This material is in use.  Triangles that use it will also be removed - are you sure?"
         : "Are you sure you want to delete this material?";
       if (confirm(message)){
         for(var i = 0; i < model.triangles.length; i++) {
-          if (model.triangles[i].material == index) {
+          if (model.triangles[i].materiala == index || model.triangles[i].materialb == index) {
             // Remove triangle
             model.triangles.splice(i, 1);
             i--;
-          } else if (model.triangles[i].material > index) {
+          } else {
             // Adjust index of materials greater than the one being deleted
-            model.triangles[i].material -= 1; 
+            if (model.triangles[i].materiala > index) {
+              model.triangles[i].materiala -= 1; 
+            }
+            if (model.triangles[i].materialb > index) {
+              model.triangles[i].materialb -= 1; 
+            }
           }
         }
         // Delete the material
@@ -145,7 +150,6 @@ var app = new Vue({
 
 function scrollToBottom(id) {
   var div = document.getElementById(id);
-  //div.scrollTop = div.scrollHeight;
   div.scrollTop = div.scrollHeight - div.clientHeight;
 }
 

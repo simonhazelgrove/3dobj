@@ -120,36 +120,36 @@ var model = {
   ],
   triangles: [
     // Cockpit
-    { p1: 18, p2: 21, p3: 22, material: 1, renderBothSides: false },
-    { p1: 21, p2: 20, p3: 22, material: 1, renderBothSides: false},
-    { p1: 20, p2: 19, p3: 22, material: 1, renderBothSides: false},
-    { p1: 19, p2: 18, p3: 22, material: 1, renderBothSides: false},
+    { p1: 18, p2: 21, p3: 22, materiala: 1, materialb: null },
+    { p1: 21, p2: 20, p3: 22, materiala: 1, materialb: null },
+    { p1: 20, p2: 19, p3: 22, materiala: 1, materialb: null },
+    { p1: 19, p2: 18, p3: 22, materiala: 1, materialb: null },
     // Front cone
-    { p1: 8, p2: 0, p3: 1, material: 3, renderBothSides: false },      
-    { p1: 8, p2: 1, p3: 2, material: 3, renderBothSides: false },
-    { p1: 8, p2: 2, p3: 3, material: 3, renderBothSides: false },
-    { p1: 8, p2: 3, p3: 0, material: 3, renderBothSides: false },
+    { p1: 8, p2: 0, p3: 1, materiala: 3, materialb: null },      
+    { p1: 8, p2: 1, p3: 2, materiala: 3, materialb: null },
+    { p1: 8, p2: 2, p3: 3, materiala: 3, materialb: null },
+    { p1: 8, p2: 3, p3: 0, materiala: 3, materialb: null },
     // Jet pipe
-    { p1: 5, p2: 4, p3: 7, material: 2, renderBothSides: false },
-    { p1: 5, p2: 7, p3: 6, material: 2, renderBothSides: false },
+    { p1: 5, p2: 4, p3: 7, materiala: 2, materialb: null },
+    { p1: 5, p2: 7, p3: 6, materiala: 2, materialb: null },
     // Left fuselage panel
-    { p1: 4, p2: 0, p3: 3, material: 0, renderBothSides: false },
-    { p1: 4, p2: 3, p3: 7, material: 0, renderBothSides: false },
+    { p1: 4, p2: 0, p3: 3, materiala: 0, materialb: null },
+    { p1: 4, p2: 3, p3: 7, materiala: 0, materialb: null },
     // Right fuselage panel
-    { p1: 1, p2: 5, p3: 6, material: 0, renderBothSides: false },
-    { p1: 1, p2: 6, p3: 2, material: 0, renderBothSides: false },
+    { p1: 1, p2: 5, p3: 6, materiala: 0, materialb: null },
+    { p1: 1, p2: 6, p3: 2, materiala: 0, materialb: null },
     // Top fuselage panel
-    { p1: 3, p2: 2, p3: 6, material: 0, renderBothSides: false },
-    { p1: 3, p2: 6, p3: 7, material: 0, renderBothSides: false },
+    { p1: 3, p2: 2, p3: 6, materiala: 0, materialb: null },
+    { p1: 3, p2: 6, p3: 7, materiala: 0, materialb: null },
     // Bottom fuselage panel
-    { p1: 4, p2: 5, p3: 1, material: 0, renderBothSides: false },
-    { p1: 4, p2: 1, p3: 0, material: 0, renderBothSides: false },
+    { p1: 4, p2: 5, p3: 1, materiala: 0, materialb: null },
+    { p1: 4, p2: 1, p3: 0, materiala: 0, materialb: null },
     // Left wing
-    { p1: 9, p2: 10, p3: 11, material: 0, renderBothSides: true },
+    { p1: 9, p2: 10, p3: 11, materiala: 0, materialb: 0 },
     // Right wing
-    { p1: 12, p2: 13, p3: 14, material: 0, renderBothSides: true },
+    { p1: 12, p2: 13, p3: 14, materiala: 0, materialb: 0 },
     // Back fin
-    { p1: 15, p2: 16, p3: 17, material: 0, renderBothSides: true },
+    { p1: 15, p2: 16, p3: 17, materiala: 0, materialb: 0 },
   ],
   compile: function(gl)
   {
@@ -168,18 +168,19 @@ var model = {
     var p1 = this.points[triangle.p1];
     var p2 = this.points[triangle.p2];
     var p3 = this.points[triangle.p3];
-    var material = this.materials[triangle.material];
+    if (triangle.materiala !== null) {
+      this.compileTriangleSide(p1, p2, p3, triangle.materiala);
+    }
+    if (triangle.materialb !== null) {
+      this.compileTriangleSide(p3, p2, p1, triangle.materialb);
+    }
+  },
+  compileTriangleSide: function(p1, p2, p3, materialIndex) {
+    var material = this.materials[materialIndex];
     var normal = this.normalFromTriangle(p1, p2, p3);
     this.compilePoint(p1, normal, material);
     this.compilePoint(p2, normal, material);
     this.compilePoint(p3, normal, material);
-    if (triangle.renderBothSides) {
-      // Render opposite side of triangle
-      normal = this.normalFromTriangle(p3, p2, p1);
-      this.compilePoint(p3, normal, material);
-      this.compilePoint(p2, normal, material);
-      this.compilePoint(p1, normal, material);
-      }
   },
   compilePoint: function(p, normal, material) {
     var i = this.getIndex(p, normal, material);

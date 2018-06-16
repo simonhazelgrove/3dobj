@@ -161,16 +161,18 @@
                             <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
                           </select>
                           
-                          <label class="sr-only" for="trianglematerial">Material</label>
-                          <select id="trianglematerial" v-model="triangle.material" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
+                          <label class="sr-only" for="trianglemateriala">Material side A</label>
+                          <select id="trianglemateriala" v-model="triangle.materiala" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
+                            <option :value="null">None</option>
+                            <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
+                          </select>
+                          
+                          <label class="sr-only" for="trianglematerialb">Material side B</label>
+                          <select id="trianglematerialb" v-model="triangle.materialb" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
+                            <option :value="null">None</option>
                             <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
                           </select>
                             
-                          <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" v-model="triangle.renderBothSides" id="trianglerenderbothsides" v-on:change="triangleChanged">
-                            <label class="form-check-label" for="trianglerenderbothsides">Double Sided</label>
-                          </div>
-
                           <div class="col">
                             <button type="button" class="btn btn-sm" v-on:click="deleteTriangle(index)">
                               <i class="fas fa-trash-alt"></i>
