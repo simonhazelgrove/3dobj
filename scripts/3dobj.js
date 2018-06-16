@@ -1,38 +1,50 @@
+const Degrees10 = 10 * (Math.PI / 180);
 const Degrees90 = 90 * (Math.PI / 180);
 const Degrees180 = 180 * (Math.PI / 180);
 
 var viewportControls = {
   view: "front",
-  speed: {
-    x: 0.5, y: 0.7, z: 0.3
+  mode: "static",
+  time: 0,
+  zoom: -4,
+  offset: {
+    x: 0, y: 0, z: 0
   },
-  applyToViewMatrix: function(matrix, time) {
+  speed: {
+    x: 0.2, y: 0.7, z: 0.3
+  },
+  applyToViewMatrix: function(matrix, deltaTime) {
     var xRot = 0, yRot = 0, zRot = 0;
+    this.time += deltaTime;
 
     if (this.view == "back") {
-      zRot = Degrees180;
+      yRot = Degrees180;
     } else if (this.view == "left") {
-      zRot = Degrees90;
+      yRot = Degrees90;
     } else if (this.view == "right") {
-      zRot = -Degrees90;
+      yRot = -Degrees90;
     } else if (this.view == "top") {
       zRot = Degrees180;
-      xRot = -Degrees;
+      xRot = -Degrees90;
     } else if (this.view == "bottom") {
-      xRot = Degrees;
+      xRot = -Degrees90;
     }
+
+    mat4.translate(matrix,     // destination matrix
+      matrix,     // matrix to translate
+      [-0.0, 0.0, this.zoom]);  // amount to translate 
 
     mat4.rotate(matrix,  // destination matrix
       matrix,  // matrix to rotate
-      xRot + time * this.speed.x,// amount to rotate in radians
+      xRot + this.offset.x + this.time * this.speed.x,// amount to rotate in radians
       [1, 0, 0]);       // axis to rotate around (X)
     mat4.rotate(matrix,  // destination matrix
       matrix,  // matrix to rotate
-      yRot + time * this.speed.y,// amount to rotate in radians
+      yRot + this.offset.y + this.time * this.speed.y,// amount to rotate in radians
       [0, 1, 0]);       // axis to rotate around (Y)
     mat4.rotate(matrix,  // destination matrix
       matrix,  // matrix to rotate
-      zRot + time * this.speed.z,     // amount to rotate in radians
+      zRot + this.offset.z + this.time * this.speed.z,     // amount to rotate in radians
       [0, 0, 1]);       // axis to rotate around (Z)
   }
 };
@@ -467,11 +479,7 @@ function drawScene(gl, programInfo, gameTime, deltaTime, model) {
   // Now move the drawing position a bit to where we want to
   // start drawing the square.
 
-  mat4.translate(modelViewMatrix,     // destination matrix
-    modelViewMatrix,     // matrix to translate
-    [-0.0, 0.0, -6.0]);  // amount to translate
-
-  viewportControls.applyToViewMatrix(modelViewMatrix, gameTime);
+  viewportControls.applyToViewMatrix(modelViewMatrix, deltaTime);
 
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);

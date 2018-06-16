@@ -1,5 +1,5 @@
-var app = new Vue({
-  el: '#ui',
+var modelUI = new Vue({
+  el: '#model-ui',
   data: model,
   methods: {
     // Add objects
