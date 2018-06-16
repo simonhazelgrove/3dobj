@@ -1,4 +1,41 @@
-var cubeRotation = 0.0;
+const Degrees90 = 90 * (Math.PI / 180);
+const Degrees180 = 180 * (Math.PI / 180);
+
+var viewportControls = {
+  view: "front",
+  speed: {
+    x: 0.5, y: 0.7, z: 0.3
+  },
+  applyToViewMatrix: function(matrix, time) {
+    var xRot = 0, yRot = 0, zRot = 0;
+
+    if (this.view == "back") {
+      zRot = Degrees180;
+    } else if (this.view == "left") {
+      zRot = Degrees90;
+    } else if (this.view == "right") {
+      zRot = -Degrees90;
+    } else if (this.view == "top") {
+      zRot = Degrees180;
+      xRot = -Degrees;
+    } else if (this.view == "bottom") {
+      xRot = Degrees;
+    }
+
+    mat4.rotate(matrix,  // destination matrix
+      matrix,  // matrix to rotate
+      xRot + time * this.speed.x,// amount to rotate in radians
+      [1, 0, 0]);       // axis to rotate around (X)
+    mat4.rotate(matrix,  // destination matrix
+      matrix,  // matrix to rotate
+      yRot + time * this.speed.y,// amount to rotate in radians
+      [0, 1, 0]);       // axis to rotate around (Y)
+    mat4.rotate(matrix,  // destination matrix
+      matrix,  // matrix to rotate
+      zRot + time * this.speed.z,     // amount to rotate in radians
+      [0, 0, 1]);       // axis to rotate around (Z)
+  }
+};
 
 var model = {
   gl: null,
@@ -431,16 +468,10 @@ function drawScene(gl, programInfo, gameTime, deltaTime, model) {
   // start drawing the square.
 
   mat4.translate(modelViewMatrix,     // destination matrix
-                 modelViewMatrix,     // matrix to translate
-                 [-0.0, 0.0, -6.0]);  // amount to translate
-  mat4.rotate(modelViewMatrix,  // destination matrix
-              modelViewMatrix,  // matrix to rotate
-              cubeRotation,     // amount to rotate in radians
-              [0, 0, 1]);       // axis to rotate around (Z)
-  mat4.rotate(modelViewMatrix,  // destination matrix
-              modelViewMatrix,  // matrix to rotate
-              cubeRotation * .7,// amount to rotate in radians
-              [1, 1, 0]);       // axis to rotate around (X)
+    modelViewMatrix,     // matrix to translate
+    [-0.0, 0.0, -6.0]);  // amount to translate
+
+  viewportControls.applyToViewMatrix(modelViewMatrix, gameTime);
 
   const normalMatrix = mat4.create();
   mat4.invert(normalMatrix, modelViewMatrix);
@@ -555,10 +586,6 @@ function drawScene(gl, programInfo, gameTime, deltaTime, model) {
     const offset = 0;
     gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
   }
-
-  // Update the rotation for the next draw
-
-  cubeRotation += deltaTime;
 }
 
 //
