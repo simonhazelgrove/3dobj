@@ -129,33 +129,35 @@
                 </div>
 
                 <div id="materials-container" class="listcontainer">
-                  <form id="material-list" class="form-inline">
-                    <div class="row" v-for="(material, index) in materials">
-                      <label class="sr-only" for="materialname">Name</label>
-                      <input type="text" v-model="material.name" class="form-control form-control-sm mb-2 mr-2" id="materialname" placeholder="Name" v-on:change="materialChanged">
-                  
-                      <label class="sr-only" for="materialr">R</label>
-                      <input type="number" v-model="material.r" class="form-control form-control-sm mb-2 mr-2" id="materialr" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                  <form id="material-list" class="container-fluid form-inline">
+                    <div class="row alternating-background p-1" v-for="(material, index) in materials">
 
-                      <label class="sr-only" for="materialr">G</label>
-                      <input type="number" v-model="material.g" class="form-control form-control-sm mb-2 mr-2" id="materialg" placeholder="G" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                      <div>
+                        <label class="sr-only" for="materialname">Name</label>
+                        <input type="text" v-model="material.name" class="form-control form-control-sm" id="materialname" placeholder="Name" v-on:change="materialChanged">
+                    
+                        <label class="sr-only" for="materialr">R</label>
+                        <input type="number" v-model="material.r" class="form-control form-control-sm" id="materialr" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
-                      <label class="sr-only" for="materialr">B</label>
-                      <input type="number" v-model="material.b" class="form-control form-control-sm mb-2 mr-2" id="materialb" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                        <label class="sr-only" for="materialr">G</label>
+                        <input type="number" v-model="material.g" class="form-control form-control-sm" id="materialg" placeholder="G" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
-                      <label class="sr-only" for="materialr">A</label>
-                      <input type="number" v-model="material.a" class="form-control form-control-sm mb-2 mr-2" id="materiala" placeholder="A" step="0.1" min="0" max="1" v-on:change="materialChanged">
+                        <label class="sr-only" for="materialr">B</label>
+                        <input type="number" v-model="material.b" class="form-control form-control-sm" id="materialb" placeholder="R" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" v-model="material.isFire" id="materialisfire" v-on:change="materialChanged">
-                        <label class="form-check-label" for="materialisfire">Is Fire</label>
-                      </div>
+                        <label class="sr-only" for="materialr">A</label>
+                        <input type="number" v-model="material.a" class="form-control form-control-sm" id="materiala" placeholder="A" step="0.1" min="0" max="1" v-on:change="materialChanged">
 
-                      <div class="col">
+                        <div class="form-check form-check-inline inlinefix">
+                          <input class="form-check-input" type="checkbox" v-model="material.isFire" id="materialisfire" v-on:change="materialChanged">
+                          <label class="form-check-label" for="materialisfire">Is Fire</label>
+                        </div>
+
                         <button type="button" class="btn btn-sm" v-on:click="deleteMaterial(index)">
                           <i class="fas fa-trash-alt"></i>
                         </button>
                       </div>
+
                     </div>
                   </form>
                 </div>
@@ -173,25 +175,27 @@
                 </div>
 
                 <div id="points-container" class="listcontainer">
-                  <form id="points-list" class="form-inline">
-                    <div class="row" v-for="(point, index) in points">
-                      <label class="sr-only" for="pointname">Name</label>
-                      <input type="text" v-model="point.name" class="form-control form-control-sm mb-2 mr-2" id="pointname" placeholder="Name" v-on:change="pointChanged">
-                    
-                      <label class="sr-only" for="pointx">X</label>
-                      <input type="number" v-model="point.x" class="form-control form-control-sm mb-2 mr-2" id="pointx" placeholder="X" step="0.1" min="-2" max="2" v-on:change="pointChanged">
-                    
-                      <label class="sr-only" for="pointy">Y</label>
-                      <input type="number" v-model="point.y" class="form-control form-control-sm mb-2 mr-2" id="pointy" placeholder="Y" step="0.1" min="-2" max="2" v-on:change="pointChanged">
-                    
-                      <label class="sr-only" for="pointy">Z</label>
-                      <input type="number" v-model="point.z" class="form-control form-control-sm mb-2 mr-2" id="pointz" placeholder="Z" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                  <form id="points-list" class="container-fluid form-inline">
+                    <div class="row alternating-background p-1" v-for="(point, index) in points">
 
-                      <div class="col">
+                      <div>
+                        <label class="sr-only" for="pointname">Name</label>
+                        <input type="text" v-model="point.name" class="form-control form-control-sm" id="pointname" placeholder="Name" v-on:change="pointChanged">
+                      
+                        <label class="sr-only" for="pointx">X</label>
+                        <input type="number" v-model="point.x" class="form-control form-control-sm" id="pointx" placeholder="X" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                      
+                        <label class="sr-only" for="pointy">Y</label>
+                        <input type="number" v-model="point.y" class="form-control form-control-sm" id="pointy" placeholder="Y" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+                      
+                        <label class="sr-only" for="pointy">Z</label>
+                        <input type="number" v-model="point.z" class="form-control form-control-sm" id="pointz" placeholder="Z" step="0.1" min="-2" max="2" v-on:change="pointChanged">
+
                         <button type="button" class="btn btn-sm" v-on:click="deletePoint(index)">
                           <i class="fas fa-trash-alt"></i>
                         </button>
                       </div>
+
                     </div>
                   </form>
                 </div>
@@ -199,53 +203,55 @@
               </div>
               <div class="tab-pane" id="triangles" role="tabpanel" aria-labelledby="triangles-tab">
 
-                  <h2>Triangles between the points</h2>
-                  
-                  <div class="row mb-2">
-                    <div class="col">
-                      <button type="button" class="btn" v-on:click="clearTriangles"><i class="fas fa-trash-alt"></i> Clear</button>
-                      <button type="button" class="btn" v-on:click="addTriangle"><i class="fas fa-plus"></i> Add</button>
-                    </div>
+                <h2>Triangles between the points</h2>
+                
+                <div class="row mb-2">
+                  <div class="col">
+                    <button type="button" class="btn" v-on:click="clearTriangles"><i class="fas fa-trash-alt"></i> Clear</button>
+                    <button type="button" class="btn" v-on:click="addTriangle"><i class="fas fa-plus"></i> Add</button>
                   </div>
-                  
-                  <div id="triangles-container" class="listcontainer">
-                    <form id="triangles-list" class="form-inline">
-                        <div class="row" v-for="(triangle, index) in triangles">
-                          <label class="sr-only" for="p1">P1</label>
-                          <select id="p1" v-model="triangle.p1" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
-                            <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
-                          </select>
-                          
-                          <label class="sr-only" for="p2">P2</label>
-                          <select id="p2" v-model="triangle.p2" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
-                            <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
-                          </select>
-                          
-                          <label class="sr-only" for="p3">P3</label>
-                          <select id="p3" v-model="triangle.p3" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
-                            <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
-                          </select>
-                          
-                          <label class="sr-only" for="trianglemateriala">Material side A</label>
-                          <select id="trianglemateriala" v-model="triangle.materiala" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
-                            <option :value="null">None</option>
-                            <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
-                          </select>
-                          
-                          <label class="sr-only" for="trianglematerialb">Material side B</label>
-                          <select id="trianglematerialb" v-model="triangle.materialb" class="form-control form-control-sm mb-2 mr-2" v-on:change="triangleChanged">
-                            <option :value="null">None</option>
-                            <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
-                          </select>
-                            
-                          <div class="col">
-                            <button type="button" class="btn btn-sm" v-on:click="deleteTriangle(index)">
-                              <i class="fas fa-trash-alt"></i>
-                            </button>
-                          </div>
-                        </div>
-                      </form>
+                </div>
+                
+                <div id="triangles-container" class="listcontainer">
+                  <form id="triangles-list" class="container-fluid form-inline">
+                    <div class="row alternating-background p-1" v-for="(triangle, index) in triangles">
+
+                      <div>
+                        <label class="sr-only" for="p1">P1</label>
+                        <select id="p1" v-model="triangle.p1" class="form-control form-control-sm col-2" v-on:change="triangleChanged">
+                          <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
+                        </select>
+
+                        <label class="sr-only" for="p2">P2</label>
+                        <select id="p2" v-model="triangle.p2" class="form-control form-control-sm col-2" v-on:change="triangleChanged">
+                          <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
+                        </select>
+
+                        <label class="sr-only" for="p3">P3</label>
+                        <select id="p3" v-model="triangle.p3" class="form-control form-control-sm col-2" v-on:change="triangleChanged">
+                          <option v-for="(point, index) in points" v-bind:value="index">{{ point.name }}</option>
+                        </select>
+
+                        <label class="sr-only" for="trianglemateriala">Material side A</label>
+                        <select id="trianglemateriala" v-model="triangle.materiala" class="form-control form-control-sm col-2" v-on:change="triangleChanged">
+                          <option :value="null">None</option>
+                          <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
+                        </select>
+
+                        <label class="sr-only" for="trianglematerialb">Material side B</label>
+                        <select id="trianglematerialb" v-model="triangle.materialb" class="form-control form-control-sm col-2" v-on:change="triangleChanged">
+                          <option :value="null">None</option>
+                          <option v-for="(material, index) in materials" v-bind:value="index">{{ material.name }}</option>
+                        </select>
+
+                        <button type="button" class="btn btn-sm" v-on:click="deleteTriangle(index)">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                      
                     </div>
+                  </form>
+                </div>
 
               </div>
             </div>

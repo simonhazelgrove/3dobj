@@ -15,9 +15,19 @@ pre.codeblock button.float-right {
 }
 
 div.listcontainer {
-    padding-left: 1em;
     position: absolute;
     overflow-y: auto;
     overflow-x: hidden;
     height: calc(95vh - 150px);
+}
+
+.alternating-background {
+    width: 100%;    
+}
+.alternating-background:nth-child(even) {
+    background: #EEE;
+}
+
+.form-inline .form-check.inlinefix {
+    display: inline-flex;
 }
