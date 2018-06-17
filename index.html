@@ -19,10 +19,11 @@
       <div class="row">
         <div class="col-5">
           <canvas id="glcanvas" width="640" height="480"></canvas>
-          <div id="viewport-ui" class="container-fluid">
+          <div id="viewport-ui">
 
-            <div class="row">
-              <div class="col text-center">
+            <div class="row justify-content-center">
+              <div class="text-center border bg-light rounded p-2 m-1">
+                View
                 <div class="btn-group" role="group" aria-label="View select">
                   <button type="button" class="btn btn-dark" v-on:click="setView('front')">Front</button>
                   <button type="button" class="btn btn-dark" v-on:click="setView('back')">Back</button>
@@ -34,51 +35,54 @@
               </div>
             </div>
 
-            <br/>
-    
-            <div class="row">
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('z', 1)"><i class="fas fa-undo"></i></button>                      
+            <div class="row justify-content-center">
+              <div class="col-6 border bg-light rounded p-2 m-1">
+                <p>Rotation</p>
+                <div class="row">
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('z', 1)"><i class="fas fa-undo"></i></button>                      
+                  </div>
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('x', -1)"><i class="fas fa-arrow-up"></i></button>
+                  </div>
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('z', -1)"><i class="fas fa-redo"></i></button>                      
+                  </div>
+                </div>
+                <br/>
+                <div class="row">
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('y', -1)"><i class="fas fa-arrow-left"></i></button>
+                  </div>
+                  <div class="col text-center">
+                    <select v-model="mode" class="form-control form-control-sm">
+                      <option value="spin">Spin</option>
+                      <option value="static">Static</option>
+                    </select>
+                  </div>
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('y', 1)"><i class="fas fa-arrow-right"></i></button>
+                  </div>
+                </div>
+                <br/>
+                <div class="row">
+                  <div class="col"></div>
+                  <div class="col text-center">
+                    <button type="button" class="btn btn-dark" v-on:click="changeRotation('x', 1)"><i class="fas fa-arrow-down"></i></button>
+                  </div>
+                  <div class="col"></div>
+                </div>                  
               </div>
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('x', -1)"><i class="fas fa-arrow-up"></i></button>
-              </div>
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('z', -1)"><i class="fas fa-redo"></i></button>                      
-              </div>
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeZoom(1)"><i class="fas fa-caret-up"></i></button>                      
-              </div>
-            </div>
-            <br/>
-            <div class="row">
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('y', -1)"><i class="fas fa-arrow-left"></i></button>
-              </div>
-              <div class="col text-center">
-                <select v-model="mode" class="form-control form-control-sm">
-                  <option value="spin">Spin</option>
-                  <option value="static">Static</option>
-                </select>
-              </div>
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('y', 1)"><i class="fas fa-arrow-right"></i></button>
-              </div>
-              <div class="col text-center">
-              </div>
-            </div>
-            <br/>
-            <div class="row">
-              <div class="col"></div>
-              <div class="col text-center">
-                <button type="button" class="btn btn-dark" v-on:click="changeRotation('x', 1)"><i class="fas fa-arrow-down"></i></button>
-              </div>
-              <div class="col"></div>
-              <div class="col text-center">
+
+              <div class="col-1 text-center border bg-light rounded p-2 m-1">
+                <p>Zoom</p>
+                <button type="button" class="btn btn-dark" v-on:click="changeZoom(1)"><i class="fas fa-caret-up"></i></button>
+                <br/>
+                <br/>
                 <button type="button" class="btn btn-dark" v-on:click="changeZoom(-1)"><i class="fas fa-caret-down"></i></button>                      
               </div>
+             
             </div>
-              
           </div>
         </div>
         <div class="col-7">
