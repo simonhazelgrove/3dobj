@@ -24,7 +24,7 @@ div.listcontainer {
 .alternating-background {
     width: 100%;    
 }
-.alternating-background:nth-child(even) {
+.alternating-background:nth-child(odd) {
     background: #EEE;
 }
 

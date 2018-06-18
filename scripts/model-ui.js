@@ -9,14 +9,14 @@ var modelUI = new Vue({
         r: 0.5, g: 0.5, b: 0.5, a: 1.0,
         isFire: false
       });
-      setTimeout(function(){ scrollToBottom("materials-container"); }, 0);
+      this.scrollToBottom("materials-container");
     },
     addPoint: function() {
       model.points.push({
         name: "",
         x: 0, y: 0, z: 0
       });
-      setTimeout(function(){ scrollToBottom("points-container"); }, 0);
+      this.scrollToBottom("points-container");
     },
     addTriangle: function() {
       model.triangles.push({ 
@@ -24,7 +24,7 @@ var modelUI = new Vue({
         material: -1, 
         renderBothSides: false 
       });
-      setTimeout(function(){ scrollToBottom("triangles-container"); }, 0);
+      this.scrollToBottom("triangles-container");
     },
     // Delete objects
     deleteMaterial: function(index) {
@@ -133,6 +133,61 @@ var modelUI = new Vue({
     exportJson: function() {
       var json = this.modelJson;
       copyTextToClipboard(json);
+    },
+    // Point mirroring
+    mirrorPoint: function(axis, point) {
+      var mirroredPoint = this.mirrorPointInAxis(axis, point);
+      if (!this.pointExists(axis, mirroredPoint)) {
+        model.points.push(mirroredPoint);
+        this.scrollToBottom("points-container");
+      }
+    },
+    mirrorPointInAxis: function(axis, point) {
+      return {
+        name: this.mirrorPointName(axis, point.name),
+        x: axis == "x" ? -point.x : point.x,
+        y: axis == "y" ? -point.y : point.y,
+        z: axis == "z" ? -point.z : point.z,
+      };
+    },
+    mirrorPointName: function(axis, name) {
+      if (axis == "x") {
+        if (name.indexOf("left") >= 0) {
+          name = name.replace("left", "right");
+        } else {
+          name = name.replace("right", "left");
+        }
+      }
+      if (axis == "y") {
+        if (name.indexOf("top") >= 0) {
+          name = name.replace("top", "bottom");
+        } else {
+          name = name.replace("bottom", "top");
+        }
+      }
+      if (axis == "z") {
+        if (name.indexOf("back") >= 0) {
+          name = name.replace("back", "front");
+        } else {
+          name = name.replace("front", "back");
+        }
+      }    
+      return name;
+    },
+    pointExists: function(axis, point) {
+      var existingPoint = model.points.find(function (p) { return p.x == point.x && p.y == point.y && p.z == point.z; })
+      return existingPoint != undefined;
+    },
+    canMirrorPoints: function (axis) {
+      var f = this;
+      var map = model.points.map(function (point) {
+        var mirroredPoint = f.mirrorPointInAxis(axis, point);
+        return !f.pointExists(axis, mirroredPoint);
+      });
+      return map;
+    },
+    scrollToBottom(divId) {
+      setTimeout(function () { scrollToBottom(divId); }, 0);
     }
   },
   computed: {
@@ -144,6 +199,15 @@ var modelUI = new Vue({
       };
       var json = JSON.stringify(cleanModel, null, 2);
       return json.trim();
+    },
+    canMirrorPointsX: function () {
+      return this.canMirrorPoints('x');
+    },
+    canMirrorPointsY: function () {
+      return this.canMirrorPoints('y');
+    },
+    canMirrorPointsZ: function () {
+      return this.canMirrorPoints('z');
     }
   }  
 });

@@ -191,6 +191,17 @@
                         <label class="sr-only" for="pointy">Z</label>
                         <input type="number" v-model="point.z" class="form-control form-control-sm" id="pointz" placeholder="Z" step="0.1" min="-2" max="2" v-on:change="pointChanged">
 
+                        <div class="btn-group" role="group" aria-label="View select">
+                          <button type="button" class="btn btn-sm" v-on:click="mirrorPoint('x', point)" :disabled="!canMirrorPointsX[index]" title="Mirror point in X axis">
+                            <i class="fas fa-arrows-alt-h"></i></button>
+                          <button type="button" class="btn btn-sm" v-on:click="mirrorPoint('y', point)" :disabled="!canMirrorPointsY[index]" title="Mirror point in Y axis">
+                            <i class="fas fa-arrows-alt-v"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm" v-on:click="mirrorPoint('z', point)" :disabled="!canMirrorPointsZ[index]" title="Mirror point in Z axis">
+                            <i class="fas fa-sort"></i>
+                          </button>
+                        </div>
+
                         <button type="button" class="btn btn-sm" v-on:click="deletePoint(index)">
                           <i class="fas fa-trash-alt"></i>
                         </button>
